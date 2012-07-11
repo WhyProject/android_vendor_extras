@@ -16,3 +16,25 @@ function mka() {
             ;;
     esac
 }
+
+function breakfast()
+{
+    target=$1
+    if [ $# -eq 0 ]; then
+        # No arguments, so let's have the full menu
+        echo "Nothing to eat for breakfast?"
+        lunch
+    else
+        echo "z$target" | grep -q "-"
+        if [ $? -eq 0 ]; then
+            # A buildtype was specified, assume a full device name
+            lunch $target
+        else
+            # This is probably just the model name
+            lunch aosp_$target-userdebug
+        fi
+    fi
+    return $?
+}
+
+alias bib=breakfast
