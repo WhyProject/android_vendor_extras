@@ -72,6 +72,13 @@ ifneq ($(TARGET_NO_KERNEL),true)
 
 TARGET_AUTO_KDIR := $(shell echo $(TARGET_DEVICE_DIR) | sed -e 's/^device/kernel/g')
 
+## Kernel tools
+ifeq ($(BOARD_USES_UBOOT),true)
+KERNEL_TOOLS := $(HOST_OUT_EXECUTABLES)/mkimage
+else
+KERNEL_TOOLS :=
+endif
+
 ## Externally influenced variables
 # kernel location - optional, defaults to kernel/<vendor>/<device>
 TARGET_KERNEL_SOURCE ?= $(TARGET_AUTO_KDIR)
@@ -301,7 +308,7 @@ $(KERNEL_CONFIG): $(KERNEL_DEFCONFIG_SRC) $(KERNEL_ADDITIONAL_CONFIG_OUT)
 			$(MAKE) -C $(KERNEL_SRC) O=$(KERNEL_OUT) ARCH=$(KERNEL_ARCH) $(KERNEL_CROSS_COMPILE) $(KERNEL_CLANG_TRIPLE) $(KERNEL_CC) KCONFIG_ALLCONFIG=$(KERNEL_OUT)/.config alldefconfig; fi
 
 .PHONY: TARGET_KERNEL_BINARIES
-TARGET_KERNEL_BINARIES: $(KERNEL_CONFIG)
+TARGET_KERNEL_BINARIES: $(KERNEL_CONFIG) $(KERNEL_TOOLS)
 	@echo "Building Kernel"
 	$(hide) rm -rf $(KERNEL_MODULES_OUT)
 	$(hide) mkdir -p $(KERNEL_MODULES_OUT)
